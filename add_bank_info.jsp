@@ -41,7 +41,7 @@
 	<body>
 		<form name="bankForm" action="BankController" method="post" onsubmit="return validateForm()">
 			<fieldset>
-			<legend class="legend"><h1>Bank Information</h1></legend>
+			<legend class="legend">Bank Information</legend>
 			<br>
 			<table>
 				<tr>
