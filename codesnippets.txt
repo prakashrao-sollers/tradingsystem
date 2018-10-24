@@ -1,0 +1,28 @@
+	public Order getNextMarketOrder(){
+		Order retVal = null;
+		ServletContext sc = getServletContext();
+		@SuppressWarnings("unchecked")
+		Vector<Order> marketOrderQueue = (Vector<Order>)sc.getAttribute("marketOrderQueue");
+		if(!marketOrderQueue.isEmpty()) {
+			synchronized(Thread.currentThread()) {
+			retVal = marketOrderQueue.remove(0);
+			}
+		}
+		return retVal;
+	}
+	
+	public void addMarketOrder(Order o) {
+		ServletContext sc = getServletContext();
+		@SuppressWarnings("unchecked")
+		Vector<Order> marketOrderQueue = (Vector<Order>)sc.getAttribute("marketOrderQueue");
+		synchronized(Thread.currentThread()) {
+			marketOrderQueue.add(o);
+		}
+	}
+	
+	public Hashtable<Integer, Order> getPendingOrders(){
+		ServletContext sc = getServletContext();
+		@SuppressWarnings("unchecked")
+		Hashtable<Integer,Order> pendingOrderQueue = (Hashtable<Integer,Order>)sc.getAttribute("pendingOrders");
+		return pendingOrderQueue;
+	}
