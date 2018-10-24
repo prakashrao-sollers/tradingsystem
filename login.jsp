@@ -12,17 +12,17 @@
 
 	<%
 	    // if there is a message attribute with this page's request, print message
-	    if (request.getAttribute("message") != null) {
-			out.println("<p style=\"color:red;\">" + request.getAttribute("message") + "</p><br>");
+	    if (request.getAttribute("errorMessage") != null) {
+			out.println("<p style=\"color:red;\">" + request.getAttribute("errorMessage") + "</p><br>");
 	    }
 	%>
 	<form action="LoginController" method="post">
-		Enter username :<input type="text" name="username"> <br>
+		Enter username :<input type="text" name="username"><br>
 		Enter password :<input type="password" name="password"><br>
 		<br> <input type="submit" value="Login">
 	</form>
 	<h2>
-		<a href="./addUser.jsp">Create New Account</a>
+		<a href="./add_user.jsp">Create New Account</a>
 	</h2>
 
 </body>
