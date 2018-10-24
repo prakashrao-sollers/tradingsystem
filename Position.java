@@ -46,11 +46,12 @@ public class Position {
     public Position(ResultSet rs) throws Exception {
 	positionId 	= rs.getInt(1);
 	symbol		= rs.getString(2);
-	side		= rs.getInt(3);
-	size		= rs.getDouble(4);
-	price		= rs.getDouble(5);
-	creationDate	= new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString(6));
-	isOpen		= rs.getBoolean(7);
+	accountId	= rs.getInt(3);
+	side		= rs.getInt(4);
+	size		= rs.getDouble(5);
+	price		= rs.getDouble(6);
+	creationDate	= new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString(7));
+	isOpen		= rs.getBoolean(8);
     }
     
     /**
@@ -71,7 +72,7 @@ public class Position {
     
     /**
      * Get order for getting all attributes including id
-     * @return String "id, symbol, account_id, side, size, price, creation_date"
+     * @return String "id, symbol, account_id, side, size, price, creation_date, is_open"
      */
     public static String getAllFieldsOrder() {
 	return "id, symbol, account_id, side, size, price, creation_date, is_open";
@@ -92,9 +93,6 @@ public class Position {
     public static String getAllSelectClause() {
     	return "select " + getAllFieldsOrder() + " from " + getTableName();
     }
-    
-    
-   
 
     /**
      * @return the positionId
