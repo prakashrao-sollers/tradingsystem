@@ -41,10 +41,10 @@ public class StockController extends TradingSystemServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		String s_ticker = request.getParameter("ticker1");
+		String ticker = request.getParameter("ticker");
 		try {
 			Statement stmt=conn.createStatement();  
-			Stock stock = YahooFinance.get(s_ticker);
+			Stock stock = YahooFinance.get(ticker);
 			
 			if (stock.getName() == null)
 				System.out.println("Ticker does not exist");
