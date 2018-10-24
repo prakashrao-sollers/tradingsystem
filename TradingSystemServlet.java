@@ -85,7 +85,7 @@ public class TradingSystemServlet extends HttpServlet {
 	    Statement stmt = conn.createStatement();
 	    ResultSet rs = stmt.executeQuery(Position.getAllSelectClause() + " WHERE account_id=\"" + userId + "\" AND is_open=\"1\";");
 	    while (rs.next()) {
-		String symbol = rs.getString(1);
+		String symbol = rs.getString(2);
 		// MONEY position will NOT be included in array list
 		if (symbol.equals("MONEY")) {
 		    continue;
