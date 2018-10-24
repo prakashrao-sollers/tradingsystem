@@ -3,15 +3,10 @@ package edu.sollers.javaprog.tradingsystem;
  * @author Karanveer
  */
 
-
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -89,7 +84,7 @@ public class AddAddress extends TradingSystemServlet {
 	    
 	    // Check if the address entered already exists
 	    Statement stmt = conn.createStatement();
-	    ResultSet rs = stmt.executeQuery(address.getAllSelectClause() + address.getComparisonWhereClause());
+	    ResultSet rs = stmt.executeQuery(Address.getAllSelectClause() + address.getComparisonWhereClause());
 	    if (rs.next()) {
 		
 		// address already exists in the table
@@ -154,7 +149,7 @@ public class AddAddress extends TradingSystemServlet {
 
 		// Check if the address entered already exists
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(mailingAddress.getAllSelectClause() + mailingAddress.getComparisonWhereClause());
+		ResultSet rs = stmt.executeQuery(Address.getAllSelectClause() + mailingAddress.getComparisonWhereClause());
 		if (rs.next()) {
 		    
 		    // address already exists in the table

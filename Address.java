@@ -3,9 +3,6 @@
  */
 package edu.sollers.javaprog.tradingsystem;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 /**
  * @author Karanveer
  *

@@ -4,13 +4,9 @@ package edu.sollers.javaprog.tradingsystem;
  */
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +31,6 @@ public class LoginController extends TradingSystemServlet {
      */
     public LoginController() {
 	super();
-	// TODO Auto-generated constructor stub
     }
 
     /**
@@ -45,7 +40,6 @@ public class LoginController extends TradingSystemServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	// TODO Auto-generated method stub
 	response.getWriter().append("Served at: ").append(request.getContextPath());
     }
 
