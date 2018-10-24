@@ -1,8 +1,7 @@
-/**
- * 
- */
 package edu.sollers.javaprog.tradingsystem;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * 
@@ -12,80 +11,51 @@ package edu.sollers.javaprog.tradingsystem;
 
 public class CreditCard 
 {
-	String u_id;
-	String c_owner;
-	String c_type;
-	String c_ccno;
-	int c_expm;
-	int c_expy;
-	int c_cvvno;
+	private int id;
+	private String owner;
+	private String cc_type;
+	private String number;
+	private int exp_month;
+	private int exp_year;
+	private String cvv;
 	
-	public CreditCard() {}
-	
-	public CreditCard(String u_id, String c_owner, String c_type, String c_ccno, int c_expm, int c_expy, int c_cvvno) {
-		super();
-		this.u_id = u_id;
-		this.c_owner = c_owner;
-		this.c_type = c_type;
-		this.c_ccno = c_ccno;
-		this.c_expm = c_expm;
-		this.c_expy = c_expy;
-		this.c_cvvno = c_cvvno;
+	public CreditCard(int id, String owner, String cc_type, String number, int exp_month, int exp_year, String cvv) {
+		this.id = id;
+		this.owner = owner;
+		this.cc_type = cc_type;
+		this.number = number;
+		this.exp_month = exp_month;
+		this.exp_year = exp_year;
+		this.cvv = cvv;
 	}
 
-	public String getU_id() {
-		return u_id;
-	}
+	public CreditCard(ResultSet rs) throws SQLException{
+    	id = rs.getInt(1);
+    	owner = rs.getString(2);
+    	cc_type = rs.getString(3);
+    	number = rs.getString(4);
+    	exp_month = rs.getInt(5);
+    	exp_year = rs.getInt(6);
+    	cvv = rs.getString(7);
+    }
 
-	public void setU_id(String u_id) {
-		this.u_id = u_id;
+	public String getFieldOrder() {
+	    return "id, owner, cc_type, number, exp_month, exp_year, cvv";
 	}
-
-	public String getC_owner() {
-		return c_owner;
+	    
+	public String getTableName() {
+	    return "credit_cards";
 	}
-
-	public void setC_owner(String c_owner) {
-		this.c_owner = c_owner;
+	    
+	public String getSelectClause() {
+	    return "select " + getFieldOrder() + " from " + getTableName();
 	}
-
-	public String getC_type() {
-		return c_type;
+	    
+	public String getInsertStatement() {
+	    return "insert into "+getTableName()+"("+getFieldOrder()+") values ("+id+", '"+owner+"', '"+cc_type+"', '"+number+"' ,"+exp_month+", "+exp_year+", '"+cvv+"')";
 	}
-
-	public void setC_type(String c_type) {
-		this.c_type = c_type;
-	}
-
-	public String getC_ccno() {
-		return c_ccno;
-	}
-
-	public void setC_ccno(String c_ccno) {
-		this.c_ccno = c_ccno;
-	}
-
-	public int getC_expm() {
-		return c_expm;
-	}
-
-	public void setC_expm(int c_expm) {
-		this.c_expm = c_expm;
-	}
-
-	public int getC_expy() {
-		return c_expy;
-	}
-
-	public void setC_expy(int c_expy) {
-		this.c_expy = c_expy;
-	}
-
-	public int getC_cvvno() {
-		return c_cvvno;
-	}
-
-	public void setC_cvvno(int c_cvvno) {
-		this.c_cvvno = c_cvvno;
+	    
+	public String getUpdateStatement() {
+	    return "update " + getTableName() + " set owner='"+owner+ "', cc_type='"+cc_type+"', number='"+number+"', exp_month="+exp_month+", exp_year="+exp_year+", cvv='"+cvv+"' where id="+id+"";
 	}
 }

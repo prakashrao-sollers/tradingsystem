@@ -1,65 +1,54 @@
 package edu.sollers.javaprog.tradingsystem;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * 
  * @author rutpatel
  *
  */
 
-public class Bank 
-{
-	String u_id;
-	String b_owner;
-	String b_name;
-	String b_accno;
-	String b_rno;
-	
-	public Bank() {}
-	
-	public Bank(String u_id, String b_owner, String b_name, String b_accno, String b_rno) {
-		this.u_id = u_id;
-		this.b_owner = b_owner;
-		this.b_name = b_name;
-		this.b_accno = b_accno;
-		this.b_rno = b_rno;
+public class Bank {
+	private int id;
+	private String owner;
+	private String name;
+	private String acc_num;
+	private String routing_num;
+
+	public Bank(int id, String owner, String name, String acc_num, String routing_num) {
+		this.id = id;
+		this.owner = owner;
+		this.name = name;
+		this.acc_num = acc_num;
+		this.routing_num = routing_num;
 	}
 
-	public String getU_id() {
-		return u_id;
-	}
+	public Bank(ResultSet rs) throws SQLException{
+    	id = rs.getInt(1);
+    	owner = rs.getString(2);
+    	name = rs.getString(3);
+    	acc_num = rs.getString(4);
+    	routing_num = rs.getString(5);	
+    }
 
-	public void setU_id(String u_id) {
-		this.u_id = u_id;
+	public String getFieldOrder() {
+	    return "id, owner, name, acc_num, routing_num";
 	}
-
-	public String getB_owner() {
-		return b_owner;
+	    
+	public String getTableName() {
+	    return "banks";
 	}
-
-	public void setB_owner(String b_owner) {
-		this.b_owner = b_owner;
+	    
+	public String getSelectClause() {
+	    return "select "+getFieldOrder()+" from "+getTableName();
 	}
-
-	public String getB_name() {
-		return b_name;
+	    
+	public String getInsertStatement() {
+	    return "insert into "+getTableName()+" ("+getFieldOrder()+") values ("+id+", '"+owner+"', '"+name+"', '"+acc_num+"' ,'"+routing_num+"')";
 	}
-
-	public void setB_name(String b_name) {
-		this.b_name = b_name;
-	}
-
-	public String getB_accno() {
-		return b_accno;
-	}
-
-	public void setB_accno(String b_accno) {
-		this.b_accno = b_accno;
-	}
-
-	public String getB_rno() {
-		return b_rno;
-	}
-
-	public void setB_rno(String b_rno) {
-		this.b_rno = b_rno;
+	    
+	public String getUpdateStatement() {
+	    return "update " + getTableName() + " set owner='"+owner+ "', name='"+name+"', acc_num='"+acc_num+"', routing_num='"+routing_num+"' where id="+id+"";
 	}
 }
