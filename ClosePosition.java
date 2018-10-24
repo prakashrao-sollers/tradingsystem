@@ -98,7 +98,7 @@ public class ClosePosition extends TradingSystemServlet {
 	
 	try {
 	    Statement stmt = conn.createStatement();
-	    ResultSet rs = stmt.executeQuery(Position.getSelectClause() +  " WHERE id=\"" + positionId + "\";");
+	    ResultSet rs = stmt.executeQuery(Position.getAllSelectClause() +  " WHERE id=\"" + positionId + "\";");
 	    rs.next();
 	    
 	    // create position object from ResultSet
