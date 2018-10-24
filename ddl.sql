@@ -9,30 +9,43 @@ CREATE TABLE `stocks` (
  PRIMARY KEY (`ticker`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-/* bank table */
-drop table if exists `bank`;
-CREATE TABLE `bank` (
- `U_Id` varchar(10) NOT NULL,
- `B_Owner` tinytext NOT NULL,
- `B_Name` tinytext NOT NULL,
- `B_AccNo` tinytext NOT NULL,
- `B_RNo` tinytext NOT NULL,
- PRIMARY KEY (`U_Id`)
+/* banks table */
+drop table if exists `banks`;
+CREATE TABLE `banks` (
+ `id` int(11) NOT NULL,
+ `owner` tinytext NOT NULL,
+ `name` tinytext NOT NULL,
+ `acc_num` tinytext NOT NULL,
+ `routing_num` tinytext NOT NULL,
+ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-/* creditcard table */
-drop table if exists `creditcard`;
-CREATE TABLE `creditcard` (
- `U_Id` varchar(10) NOT NULL,
- `C_Owner` tinytext NOT NULL,
- `C_Type` tinytext NOT NULL,
- `C_CCNo` tinytext NOT NULL,
- `C_ExpM` tinyint(2) NOT NULL,
- `C_ExpY` smallint(4) NOT NULL,
- `C_CVVNo` tinytext NOT NULL,
- PRIMARY KEY (`U_Id`)
+/* credit_cards table */
+drop table if exists `credit_cards`;
+CREATE TABLE `credit_cards` (
+ `id` int(11) NOT NULL,
+ `owner` tinytext NOT NULL,
+ `cc_type` tinytext NOT NULL,
+ `number` tinytext NOT NULL,
+ `exp_month` tinyint(2) NOT NULL,
+ `exp_year` smallint(4) NOT NULL,
+ `cvv` tinytext NOT NULL,
+ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+/* address table */
+drop table if exists `address`;
+CREATE TABLE `address` (
+ `id` int(11) NOT NULL,
+ `street1` varchar(30) NOT NULL,
+ `street2` varchar(30) DEFAULT NULL,
+ `city` varchar(30) NOT NULL,
+ `state` varchar(20) NOT NULL,
+ `zip` varchar(10) NOT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/* accounts table */
 drop table if exists `accounts`;
 CREATE TABLE `accounts` (
  `id` int(11) NOT NULL COMMENT 'login.id gets copied to this id',
@@ -51,6 +64,7 @@ CREATE TABLE `accounts` (
  CONSTRAINT `mailing address id foreign key` FOREIGN KEY (`mailing_address_id`) REFERENCES `address` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+/* positions table */
 drop table if exists `positions`;
 CREATE TABLE `positions` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -66,13 +80,29 @@ CREATE TABLE `positions` (
  CONSTRAINT `account_id foreign key` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-drop table if exists `address`;
-CREATE TABLE `address` (
+/* orders table */
+drop table if exists `orders`;
+CREATE TABLE `orders` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
- `street1` varchar(30) NOT NULL,
- `street2` varchar(30) DEFAULT NULL,
- `city` varchar(30) NOT NULL,
- `state` varchar(20) NOT NULL,
- `zip` varchar(10) NOT NULL,
+ `order_type` enum('BUY','SELL','SELL_SHORT','BUY_TO_COVER') NOT NULL,
+ `price_type` enum('MARKET','LIMIT','STOP','') NOT NULL,
+ `time_in_force` enum('DAY','GTX','GTC','') NOT NULL,
+ `order_status` enum('PENDING','EXECUTED','CANCELLED','') NOT NULL,
+ `account_id` int(11) NOT NULL,
+ `symbol` varchar(10) NOT NULL,
+ `size` int(11) NOT NULL,
+ `stop_price` double NOT NULL,
+ `creation_date` date NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `order account_id foreign key` (`account_id`) USING BTREE,
+ CONSTRAINT `order_account_id foreign key` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+/* login table */
+drop table if exists `login`;
+CREATE TABLE `login` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `username` varchar(20) NOT NULL,
+ `password` varchar(20) NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
