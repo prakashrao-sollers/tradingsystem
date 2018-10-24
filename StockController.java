@@ -23,51 +23,16 @@ import yahoofinance.YahooFinance;
  * Servlet implementation class AddStocks
  */
 @WebServlet("/StockController")
-public class StockController extends HttpServlet {
+public class StockController extends TradingSystemServlet {
 	private static final long serialVersionUID = 1L;
-	Connection conn;
 
-    /**
-     * Default constructor. 
-     */
-    public StockController() {
-        conn = null;
-    }
+   
+    public StockController() {}
  
-    /**
-     * init. Initialized database connection
-     */
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        try {
-            // db parameters
-            String url = "jdbc:mariadb://localhost:3306/sollerstrading";
-            // create a connection to the database
-            Class.forName("org.mariadb.jdbc.Driver");
-            conn = DriverManager.getConnection(url, "webuser", "Sollers@123");
-        } catch (SQLException e) {
-        	e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-        	e.printStackTrace();
-        }
-      }
-    /** 
-     * destroy method closes db connection
-     */
-    public void destroy() {
-    	try {
-    		conn.close();
-    	} catch (SQLException e) {
-    		e.printStackTrace();
-    	}
-    }
-
-
-	/**
+    	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
@@ -77,13 +42,9 @@ public class StockController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		String s_ticker = request.getParameter("ticker1");
-		
-		//System.out.println(ticker);
 		try {
 			Statement stmt=conn.createStatement();  
-			
 			Stock stock = YahooFinance.get(s_ticker);
-			
 			
 			if (stock.getName() == null)
 				System.out.println("Ticker does not exist");
@@ -98,18 +59,18 @@ public class StockController extends HttpServlet {
 				//System.out.println(insertQuery);
 				stmt.executeUpdate(insertQuery);
 				
-				response.sendRedirect("AddStocks.html");
+				response.sendRedirect("add_stocks.html");
 				return;
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println(e.getMessage());
-			response.sendRedirect("AddStocks.html");
+			response.sendRedirect("add_stocks.html");
 		}catch (IOException e) {
 			System.out.println(e.getMessage());
-			response.sendRedirect("AddStocks.html");
+			response.sendRedirect("add_stocks.html");
 		} catch (Exception e){
 			System.out.println(e.getMessage());
-			response.sendRedirect("AddStocks.html");
+			response.sendRedirect("add_stocks.html");
 		}
 	}
 }
