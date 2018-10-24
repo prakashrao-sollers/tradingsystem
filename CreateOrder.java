@@ -31,12 +31,18 @@ import edu.sollers.javaprog.tradingsystem.Order.PriceType;
 import edu.sollers.javaprog.tradingsystem.Order.TimeInForce;
 
 /**
- * Servlet implementation class CreateOrder
+ * CreateOrder extends TradingSystemServlet.
+ * 
+ * It is used to create an order. The get method
+ * displays an html page where the user can choose
+ * whether to create a new order or close an existing position.
+ * 
+ * The post method is used to process the submission of 
+ * create_order.jsp and create an order.
  */
 @WebServlet("/CreateOrder")
-public class CreateOrder extends HttpServlet {
+public class CreateOrder extends TradingSystemServlet {
     private static final long serialVersionUID = 1L;
-    private Connection conn;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -44,145 +50,19 @@ public class CreateOrder extends HttpServlet {
     public CreateOrder() {
 	super();
     }
-
-    /**
-     * @see Servlet#init(ServletConfig)
-     */
-    public void init(ServletConfig config) throws ServletException {
-	super.init(config);
-	try {
-	    Class.forName("org.mariadb.jdbc.Driver");
-
-	    String url = "jdbc:mariadb://localhost:3306/sollerstrading";
-	    // create connection to db
-	    conn = DriverManager.getConnection(url, "webuser", "Sollers@123");
-
-	    System.out.println("\nConnection made\n\n");
-	} catch (ClassNotFoundException e) {
-	    e.printStackTrace();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    /**
-     * @see Servlet#destroy()
-     */
-    public void destroy() {
-	try {
-	    conn.close();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-    }
     
-    
-    /**
-     * Method to retrieve the information for a stock from 
-     * the database matching the input parameter ticker.
-     * 
-     * @param ticker String symbol for stock
-     * @return stock object if it was found, else null
-     * @author Karanveer
-     */
-    private Stock getStock(String ticker) {
-	Stock currentStock = null;
-	try {
-	    Statement stmt = conn.createStatement();
-	    ResultSet rs   = stmt.executeQuery("SELECT full_name, bid, ask, last FROM stocks WHERE ticker=\"" + ticker + "\";");
-	    if (rs.next()) {
-		String fullName = rs.getString(1);
-		double bid 	= rs.getDouble(2);
-		double ask	= rs.getDouble(3);
-		double last	= rs.getDouble(4);
-		currentStock = new Stock(ticker, fullName, bid, ask, last);
-	    }
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-	return currentStock;
-    }
-    
-    
-    /**
-     * This method retrieves all open positions for a given user id
-     * 
-     * @param userId of user in session
-     * @return ArrayList of all open positions or empty array list if no positions
-     */
-    private ArrayList<Position> getOpenPositionsForAccount(int userId) {
-	ArrayList<Position> positions = new ArrayList<>();
-	try {
-	    // Build array list of positions
-	    Statement stmt = conn.createStatement();
-	    ResultSet rs = stmt.executeQuery("SELECT symbol, id, side, size, price, creation_date FROM positions WHERE account_id=\"" + userId + "\" AND is_open=\"1\";");
-	    while (rs.next()) {
-
-		String symbol = rs.getString(1);
-		// MONEY position will NOT be included in array list
-		if (symbol.equals("MONEY")) {
-		    continue;
-		}
-		int positionId = rs.getInt(2);
-		int    side    = rs.getInt(3);
-		double size    = rs.getDouble(4);
-		double price   = rs.getDouble(5);
-		Date date      = new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString(6));
-
-		Position p = new Position(positionId, symbol, userId, side, size, price, date);
-		positions.add(p);
-		System.out.println(p.toString());
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return positions;
-    }
-    
-    /**
-     * This method retrieves the given account's funds
-     * i.e the "MONEY" position for the account. 
-     * 
-     * @param userId int
-     * @return Position object with for symbol "MONEY" or null
-     */
-    private Position getMoneyPosition(int userId) {
-	Position p = null;
-	try {
-	    Statement stmt = conn.createStatement();
-	    ResultSet rs   = stmt.executeQuery("SELECT id, side, size, price, creation_date FROM positions WHERE account_id=" + userId + " AND symbol=\"MONEY\";");
-	    if (rs.next()) {
-		int positionId = rs.getInt(1);
-		int side       = rs.getInt(2);
-		double size    = rs.getDouble(3);
-		double price   = rs.getDouble(4);
-		Date date      = new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString(5));
-		p              = new Position(positionId, "MONEY", userId, side, size, price, date);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return p;
-    }
-
-    private Hashtable<Integer, Order> getPendingOrders(){
-        ServletContext sc = getServletContext();
-        @SuppressWarnings("unchecked")
-        Hashtable<Integer,Order> pendingOrderQueue = (Hashtable<Integer,Order>)sc.getAttribute("pendingOrders");
-        return pendingOrderQueue;
-    }
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	Integer userId = (Integer) request.getSession().getAttribute("userId");
+	Integer userId = getUserId(request);
 	
 	// check if account has a MONEY position
 	Position moneyPosition = getMoneyPosition(userId);
 	if (moneyPosition == null) {
 	    request.setAttribute("errorMessage", "Must add funds before creating order");
-	    request.getRequestDispatcher("accountHome.jsp").forward(request, response);
+	    request.getRequestDispatcher("account_home.jsp").forward(request, response);
 	}
 	
 	response.setContentType("text/html");
@@ -191,58 +71,51 @@ public class CreateOrder extends HttpServlet {
 	writer.println("<html>");
 	writer.println("<head>");
 	writer.println("<title>" + "Sollers Trading System - Create Order" + "</title></head>");
-	writer.println(Helper.getCSS());
+	writer.println(getCSS());
 	writer.println("<body>");
 	writer.println("Current session user id: " + userId);
-	writer.println("<h3><a href=\"createOrder.jsp\">New Order</a></h3>");
+	writer.println("<h3><a href=\"create_order.jsp\">New Order</a></h3>");
 	writer.println("<h3><a href=\"ClosePosition\">Close Existing Position</a></h3>");
 	writer.println("<br><br>");
 	writer.println("<ul class=\"navList\">");
-	writer.println("<li class=\"navItem\"><a href=\"accountHome.jsp\">Home</a></li>");
+	writer.println("<li class=\"navItem\"><a href=\"account_home.jsp\">Home</a></li>");
 	writer.println("</ul");
 	writer.println("</body>");
 	writer.println("</html>");
-	
-	request.getSession().setAttribute("userId", userId);
     }
     
 
     /**
+     * Algorithm:
+     * 
+     * For user in session
+     * 
+     * 1) Get form parameters
+     * 
+     * 2) Ensure that order is for a valid stock symbol
+     * (stock symbol exists in stocks table)
+     * 
+     * 3) Ensure that symbol, side, and size are unique for this account's positions
+     * 
+     * 4) Ensure there are sufficient funds in account for buy/buy to cover order
+     * 
+     * 5) Ensure that order is not a duplicate order 
+     * (side, symbol combination is unique for this account's positions)
+     * 
+     * 6) Ensure that value of an order to close a position is less than $25,000
+     * 
+     * If this is a limit buy order, limit price must be less than last price
+     * If this is a limit sell order, limit price must be greater than last price
+     * If this is a stop buy order, stop price must be higher than last price
+     * If this is a stop sell order, stop price must be lower than last price
+     * 
+     * If price validation failse, user is alerted. 
+     * 
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	// TODO get userid from session
-	Integer userId = (Integer) request.getSession().getAttribute("userId");
-	
-//	int userId = 2; // John Doe in database
-	
-	/*
-	 * Algorithm:
-	 * 
-	 * Assuming some session variable is available 
-	 * 
-	 * 1) Get form parameters
-	 * 
-	 * 2) Ensure that order is for a valid stock symbol
-	 * (stock symbol exists in stocks table)
-	 * 
-	 * 3) Ensure that symbol, side, and size are unique for this account's positions
-	 * 
-	 * 4) Ensure there are sufficient funds in account for buy/buy to cover order
-	 * 
-	 * 5) Ensure that order is not a duplicate order 
-	 * (side, symbol combination is unique for this account's positions)
-	 * 
-	 * 6) Ensure that value of an order to close a position is less than $25,000
-	 * 
-	 * If this is a limit buy order, limit price must be less than last price
-	 * If this is a limit sell order, limit price must be greater than last price
-	 * If this is a stop buy order, stop price must be higher than last price
-	 * If this is a stop sell order, stop price must be lower than last price
-	 * 
-	 * If price validation failse, user is alerted. 
-	 * 
-	 */
+	// Get userid from session
+	Integer userId = getUserId(request);
 	
 	// 1) Get form parameters
 	OrderType orderType = OrderType.valueOf(request.getParameter("orderType"));
@@ -257,11 +130,11 @@ public class CreateOrder extends HttpServlet {
 	    stopLevel = Double.parseDouble(request.getParameter("stopPrice"));
 	}
 	
-	
 	if (userId == null) {
 	    System.out.println("User id is null");
 	}
-	// Sunny day scenario
+	
+	// Create order object from form parameters
 	Order order = new Order(orderType, priceType, timeInForce, userId, symbol, size, stopLevel);
 	
 	ArrayList<String> errorMessage = new ArrayList<>();
@@ -333,52 +206,30 @@ public class CreateOrder extends HttpServlet {
 		}
 	    }
 	    
-	    // add order to be processed if no errors
+	    // add order to appropriate queue if no errors
 	    if (errorMessage.isEmpty()) {		
 		if (order.getPriceType() != PriceType.MARKET) {
-		    
-		    // add to pendingOrder hashtable
-		    Hashtable<Integer, Order> pendingOrders = getPendingOrders();
-		    String poStatus = (pendingOrders == null) ? "null" : "not null";
-		    System.out.println("pendingOrders is " + poStatus);
-		    if (pendingOrders != null) {
-			pendingOrders.put(order.getOrderID(), order);
-			System.out.println("\n" + order.toString() + "\nadded to pending orders \n");
-		    }
+		    addPendingOrder(order); // add to pendingOrder queue
 		}
 		else {
-		    
-		    // add to market order queue 
-		    ServletContext sc = getServletContext();
-		    @SuppressWarnings("unchecked")
-		    Vector<Order> marketOrderQueue = (Vector<Order>)sc.getAttribute("marketOrderQueue");
-		    if(marketOrderQueue == null) {
-			response.getWriter().append("Error: market order queue is null");
-		    }
-		    else {
-			synchronized(Thread.currentThread()) {
-			    marketOrderQueue.add(order);
-			    System.out.println("\n" + order.toString() + "\nadded to market queue \n");
-			}
-		    }
+		    addMarketOrder(order); // add to market order queue 
 		}
 		
-		// TODO add order to 'orders' table in database
+		// Add order to 'orders' table in database
 		int updateQuery = insertOrderRecord(order);
 		if (updateQuery == 1) {
 		    System.out.println("Successfully inserted order into orders table");
 		}
-		
 	    } // end if where error_message.isEmpty()
 	} // end else where stock is not null
 	
 	if (!errorMessage.isEmpty()) {
-	    request.setAttribute("message", errorMessage);
-	    request.getRequestDispatcher("/createOrder.jsp").forward(request, response);
+	    request.setAttribute("errorMessage", errorMessage);
+	    request.getRequestDispatcher("/create_order.jsp").forward(request, response);
 	}
 	else {
 	    request.setAttribute("successMessage", "Order created successfully");
-	    request.getRequestDispatcher("/accountHome.jsp").forward(request, response);
+	    request.getRequestDispatcher("/account_home.jsp").forward(request, response);
 	}
     }
     
@@ -411,7 +262,34 @@ public class CreateOrder extends HttpServlet {
 	return num;
     }
     
-    
-     
+    /**
+     * Method to add order object to market order queue
+     * @param order
+     */
+    private void addMarketOrder(Order order) {
+	ServletContext sc = getServletContext();
+	@SuppressWarnings("unchecked")
+	Vector<Order> marketOrderQueue = (Vector<Order>)sc.getAttribute("marketOrderQueue");
+	if(marketOrderQueue == null) {
+	    System.out.println("Error: market order queue is null");
+	}
+	synchronized(Thread.currentThread()) {
+	    marketOrderQueue.add(order);
+	    System.out.println("\n" + order.toString() + "\nadded to market queue \n");
+	}
+    }
 
+    /**
+     * Method to add order object to pending order queue
+     * @param order
+     */
+    private void addPendingOrder(Order order) {
+	Hashtable<Integer, Order> pendingOrders = getPendingOrders();
+	String poStatus = (pendingOrders == null) ? "null" : "not null";
+	System.out.println("pendingOrders is " + poStatus);
+	if (pendingOrders != null) {
+	    pendingOrders.put(order.getOrderID(), order);
+	    System.out.println("\n" + order.toString() + "\nadded to pending orders \n");
+	}
+    }
 }

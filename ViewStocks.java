@@ -20,12 +20,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class ViewStocks
+ * ViewStocks extends TradingSystemServlet.
+ * 
+ * Its get method displays an html/css table
+ * with all stock values from the database
  */
 @WebServlet("/ViewStocks")
-public class ViewStocks extends HttpServlet {
+public class ViewStocks extends TradingSystemServlet {
     private static final long serialVersionUID = 1L;
-    private Connection conn;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -33,37 +35,6 @@ public class ViewStocks extends HttpServlet {
     public ViewStocks() {
 	super();
 	// TODO Auto-generated constructor stub
-    }
-
-    /**
-     * @see Servlet#init(ServletConfig)
-     */
-    public void init(ServletConfig config) throws ServletException {
-	super.init(config);
-	try {
-	    Class.forName("org.mariadb.jdbc.Driver");
-
-	    String url = "jdbc:mariadb://localhost:3306/sollerstrading";
-	    // create connection to db
-	    conn = DriverManager.getConnection(url, "webuser", "Sollers@123");
-
-	    System.out.println("\nConnection made\n\n");
-	} catch (ClassNotFoundException e) {
-	    e.printStackTrace();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    /**
-     * @see Servlet#destroy()
-     */
-    public void destroy() {
-	try {
-	    conn.close();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}    
     }
     
     /**
@@ -75,14 +46,9 @@ public class ViewStocks extends HttpServlet {
 	ArrayList<Stock> stocks = new ArrayList<>();
 	try {
 	    Statement stmt = conn.createStatement();
-	    ResultSet rs   = stmt.executeQuery("SELECT * FROM stocks;");
+	    ResultSet rs   = stmt.executeQuery(Stock.getSelectClause());
 	    while (rs.next()) {
-		String ticker   = rs.getString("ticker");
-		String fullName = rs.getString("full_name");
-		double bid 	= rs.getDouble("bid");
-		double ask	= rs.getDouble("ask");
-		double last	= rs.getDouble("last");
-		Stock currentStock = new Stock(ticker, fullName, bid, ask, last);
+		Stock currentStock = new Stock(rs);
 		stocks.add(currentStock);
 	    }
 	} catch (SQLException e) {
@@ -105,7 +71,7 @@ public class ViewStocks extends HttpServlet {
 	writer.println("<html>");
 	writer.println("<head>");
 	writer.println("<title>" + "Sollers Trading System - View Stocks" + "</title></head>");
-	writer.println(Helper.getCSS());		// get CSS from helper class
+	writer.println(getCSS());
 	writer.println("<body>");
 	writer.println("<h2>Stocks</h2>");
 
@@ -134,7 +100,7 @@ public class ViewStocks extends HttpServlet {
 	writer.println("</div>");
 	writer.println("<br><br>");
 	writer.println("<ul class=\"navList\">");
-	writer.println("<li class=\"navItem\"><a href=\"accountHome.jsp\">Home</a></li>");
+	writer.println("<li class=\"navItem\"><a href=\"account_home.jsp\">Home</a></li>");
 	writer.println("<li class=\"navItem\"><a href=\"CreateOrder\">Create Order</a></li>");
 	writer.println("</ul");
 	writer.println("</body>");
@@ -142,6 +108,7 @@ public class ViewStocks extends HttpServlet {
     }
 
     /**
+     * Default post method
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

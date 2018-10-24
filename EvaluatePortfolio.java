@@ -22,12 +22,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class EvaluatePortfolio
+ * EvaluatePortfolio extends TradingSystemServlet.
+ * 
+ * Its get method displays an html page showing the open positions for the user
+ * in session
  */
 @WebServlet("/EvaluatePortfolio")
-public class EvaluatePortfolio extends HttpServlet {
+public class EvaluatePortfolio extends TradingSystemServlet {
     private static final long serialVersionUID = 1L;
-    private Connection conn;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -38,102 +40,10 @@ public class EvaluatePortfolio extends HttpServlet {
     }
 
     /**
-     * init. Initialized database connection
-     */
-    public void init(ServletConfig config) throws ServletException {
-	super.init(config);
-	try {
-	    Class.forName("org.mariadb.jdbc.Driver");
-
-	    String url = "jdbc:mariadb://localhost:3306/sollerstrading";
-	    // create a connection to the database
-	    conn = DriverManager.getConnection(url, "webuser", "Sollers@123");
-
-	    System.out.println("\nConnection made\n\n");
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	} catch (ClassNotFoundException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    /** 
-     * destroy method closes db connection
-     */
-    public void destroy() {
-	try {
-	    conn.close();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    /**
-     * This method retrieves all open positions for a given user id
-     * 
-     * @param userId of user in session
-     * @return ArrayList of all open positions or empty array list if no positions
-     */
-    private ArrayList<Position> getOpenPositionsForAccount(int userId) {
-	ArrayList<Position> positions = new ArrayList<>();
-	try {
-	    // Build array list of positions
-	    Statement stmt = conn.createStatement();
-	    ResultSet rs = stmt.executeQuery("SELECT symbol, id, side, size, price, creation_date FROM positions WHERE account_id=\"" + userId + "\" AND is_open=\"1\";");
-	    while (rs.next()) {
-
-		String symbol = rs.getString(1);
-		// MONEY position will NOT be included in array list
-		if (symbol.equals("MONEY")) {
-		    continue;
-		}
-		int positionId = rs.getInt(2);
-		int    side    = rs.getInt(3);
-		double size    = rs.getDouble(4);
-		double price   = rs.getDouble(5);
-		Date date      = new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString(6));
-
-		Position p = new Position(positionId, symbol, userId, side, size, price, date);
-		positions.add(p);
-		System.out.println(p.toString());
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return positions;
-    }
-    
-    /**
-     * Method to retrieve the information for a stock from 
-     * the database matching the input parameter ticker.
-     * 
-     * @param ticker String symbol for stock
-     * @return stock object if it was found, else null
-     * @author Karanveer
-     */
-    private Stock getStock(String ticker) {
-	Stock currentStock = null;
-	try {
-	    Statement stmt = conn.createStatement();
-	    ResultSet rs   = stmt.executeQuery("SELECT * FROM stocks WHERE ticker=\"" + ticker + "\";");
-	    if (rs.next()) {
-		String fullName = rs.getString("full_name");
-		double bid 	= rs.getDouble("bid");
-		double ask	= rs.getDouble("ask");
-		double last	= rs.getDouble("last");
-		currentStock = new Stock(ticker, fullName, bid, ask, last);
-	    }
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-	return currentStock;
-    }
-
-    /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	Integer userId = (Integer) request.getSession().getAttribute("userId");
+	Integer userId = getUserId(request);
 	
 	ArrayList<Position> positions = getOpenPositionsForAccount(userId);
 	
@@ -143,10 +53,9 @@ public class EvaluatePortfolio extends HttpServlet {
 	writer.println("<html>");
 	writer.println("<head>");
 	writer.println("<title>" + "Sollers Trading System - Evaluated Portfolio" + "</title></head>");
-	writer.println(Helper.getCSS());
+	writer.println(getCSS());
 	writer.println("<body>");
 	writer.println("<h2>Evaluated Portfolio</h2>");
-	
 	
 	if (positions.isEmpty()) {
 	    writer.println("<p>No open positions to evaluate for account.</p>");
@@ -187,16 +96,15 @@ public class EvaluatePortfolio extends HttpServlet {
 	
 	writer.println("<br><br>");
 	writer.println("<ul class=\"navList\">");
-	writer.println("<li class=\"navItem\"><a href=\"accountHome.jsp\">Home</a></li>");
+	writer.println("<li class=\"navItem\"><a href=\"account_home.jsp\">Home</a></li>");
 	writer.println("</ul");
 	
 	writer.println("</body>");
 	writer.println("</html>");
     }
-    
-   
 
     /**
+     * Default pose method
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

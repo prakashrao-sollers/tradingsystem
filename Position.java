@@ -6,6 +6,8 @@ package edu.sollers.javaprog.tradingsystem;
  * @author Karanveer
  */
 
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Position {
@@ -35,6 +37,64 @@ public class Position {
 	this.isOpen = true;	// set to false when closing the position
 	this.creationDate = creationDate;
     }
+    
+    /**
+     * Constructor that instantiates a position from ResultSet paramater
+     * @param rs
+     * @throws Exception
+     */
+    public Position(ResultSet rs) throws Exception {
+	positionId 	= rs.getInt(1);
+	symbol		= rs.getString(2);
+	side		= rs.getInt(3);
+	size		= rs.getDouble(4);
+	price		= rs.getDouble(5);
+	creationDate	= new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString(6));
+	isOpen		= rs.getBoolean(7);
+    }
+    
+    /**
+     * Get table name
+     * @return String
+     */
+    public static String getTableName() {
+    	return "positions";
+    }
+    
+    /**
+     * Get order for getting all non-id attributes
+     * @return String "symbol, account_id, side, size, price, creation_date"
+     */
+    public static String getFieldOrder() {
+	return "symbol, account_id, side, size, price, creation_date";
+    }
+    
+    /**
+     * Get order for getting all attributes including id
+     * @return String "id, symbol, account_id, side, size, price, creation_date"
+     */
+    public static String getAllFieldsOrder() {
+	return "id, symbol, account_id, side, size, price, creation_date, is_open";
+    }
+    
+    /**
+     * Get all non-id attributes from database clause
+     * @return String "select " + getFieldOrder() + " from " + getTableName()"
+     */
+    public static String getSelectClause() {
+	return "select " + getFieldOrder() + " from " + getTableName();
+    }
+    
+    /**
+     * Get all attributes from database, including id attribute
+     * @return String "select " + getAllFieldsOrder() + " from " + getTableName()"
+     */
+    public static String getAllSelectClause() {
+    	return "select " + getAllFieldsOrder() + " from " + getTableName();
+    }
+    
+    
+   
 
     /**
      * @return the positionId

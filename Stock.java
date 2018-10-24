@@ -36,18 +36,17 @@ public class Stock {
     	bid = rs.getDouble(3);
     	ask = rs.getDouble(4);
     	last = rs.getDouble(5);
-    	
     }
     
-    public String getFieldOrder() {
+    public static String getFieldOrder() {
     	return "ticker, full_name, bid, ask, last";
     }
     
-    public String getTableName() {
+    public static String getTableName() {
     	return "stocks";
     }
     
-    public String getSelectClause() {
+    public static String getSelectClause() {
     	return "select " + getFieldOrder() + " from " + getTableName();
     }
     
