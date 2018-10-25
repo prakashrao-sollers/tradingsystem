@@ -57,6 +57,7 @@ public class EvaluatePortfolio extends TradingSystemServlet {
 	    writer.println("<div class=\"rTableRow\">");
 	    writer.println("<div class=\"rTableHead\"><strong>Symbol</strong></div>");
 	    writer.println("<div class=\"rTableHead\"><strong>Description</strong></div>");
+	    writer.println("<div class=\"rTableHead\"><strong>Side</strong></div>");
 	    writer.println("<div class=\"rTableHead\"><strong>Quantity</strong></div>");
 	    writer.println("<div class=\"rTableHead\"><strong>Trade Price</strong></div>");
 	    writer.println("<div class=\"rTableHead\"><strong>Current Price</strong></div>");
@@ -75,6 +76,7 @@ public class EvaluatePortfolio extends TradingSystemServlet {
 		writer.println("<div class=\"rTableRow\">");
 		writer.println("<div class=\"rTableCell\">" + p.getSymbol() + "</div>");
 		writer.println("<div class=\"rTableCell\">" + stock.getFullName() + "</div>");
+		writer.println("<div class=\"rTableCell\">" + ((p.getSide() == 1) ? 'L' : 'S') + "</div>");
 		writer.println("<div class=\"rTableCell\">" + p.getSize() + "</div>");
 		writer.println("<div class=\"rTableCell\">" + p.getPrice() + "</div>");
 		writer.println("<div class=\"rTableCell\">" + currentPrice + "</div>");
