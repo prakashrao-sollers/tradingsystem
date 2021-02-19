@@ -49,7 +49,7 @@
 
 	<h1>Create Order</h1>
 	
-	<c:set var="message" value='${message}'/>
+	<c:set var="errorMessage" value='${errorMessage}'/>
     <c:set var="position" value='${position}'/>
     <c:set var="symbol" value='${symbol}'/>
     <c:set var="side" value='${side}'/>
@@ -59,8 +59,8 @@
 		<p>Current session user id: <c:out value="${userId}"/></p>
 	</c:if>
 
-	<c:if test="${message != null}">
-		<c:forEach items="${message}" var="line">
+	<c:if test="${errorMessage != null}">
+		<c:forEach items="${errorMessage}" var="line">
 			<p style="color: red;">
 				<c:out value="${line}"/><br>
 			</p>
@@ -137,7 +137,7 @@
 			<input type="submit" name="submit" value="Place Order"/>
 		</div>
 	</form>
-	<ul class="navList"><li class="navItem"><a href="accountHome.jsp">Home</a></li></ul>
+	<ul class="navList"><li class="navItem"><a href="account_home.jsp">Home</a></li></ul>
 	<script>
 		document.getElementById("mkt").addEventListener('change', function(){
 		    document.getElementById("stopPr").disabled = this.checked;

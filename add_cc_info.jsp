@@ -157,14 +157,16 @@
 			    	}
 			   	}
 			    
-			    var tD = new Date();
-			    var cm = tD.getMonth() + 1;
 			    var expm = document.forms["creditCardForm"]["c_expm"].value;
-			    if(!(expm >= cm)){
+			    var expy = document.forms["creditCardForm"]["c_expy"].value;
+			    var eD = new Date(expy,expm,0);
+			    var tD = new Date(new Date().getFullYear(), new Date().getMonth()+1,0);
+			    if(eD < tD)
+			    {
 			    	document.forms["creditCardForm"]["c_expm"].value = "";
 			        alert("Credit Card is already Expired. Try again...");
 			        return false;
-			    }
+			   	}
 			    
 			    var cvvno = document.forms["creditCardForm"]["c_cvvno"].value;
 			    if(c_type == "AMEX"){
@@ -187,7 +189,7 @@
 	<body>
 		<form name="creditCardForm" action="CCController" method="post" onsubmit="return validateForm()">
 			<fieldset>
-			<legend class="legend"><h1>Credit Card Information</h1></legend>
+			<legend class="legend">Credit Card Information</legend>
 			<br>
 				<table>
 					<tr>
@@ -212,7 +214,7 @@
 					<tr>
 						<th>Expiration Month/Year :</th>
 						<th>
-                        	<input id="c_expm" name="c_expm" type="number" min="1" max="12" placeholder="mm" required onchange="if(parseInt(this.value,10)<10)this.value='0'+this.value;"/>
+                        	<input id="c_expm" name="c_expm" type="number" min="1" max="12" placeholder="mm" required/>
                         	<input id="c_expy" name="c_expy" type="number" placeholder="yyyy" required/>
                         	<script>
 	                        	var td = new Date();

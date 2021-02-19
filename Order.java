@@ -3,6 +3,8 @@ package edu.sollers.javaprog.tradingsystem;
  * @author Karanveer
  */
 
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Order {
@@ -56,6 +58,48 @@ public class Order {
 	this.stopPrice 		= stopPrice; 		// if market order, set to 0, else set to specified stopPrice
 	this.status 		= OrderStatus.PENDING;		
 	this.creationDateTime 	= new Date();		// set automatically
+    }
+
+    /**
+     * Gets the field order
+     * @return String "order_type, price_type, time_in_force, order_status, account_id, symbol, size, stop_price, creation_date"
+     */
+    public static String getFieldOrder() {
+    	return "order_type, price_type, time_in_force, order_status, account_id, symbol, size, stop_price, creation_date";
+    }
+    
+    /**
+     * Gets table name
+     * @return String
+     */
+    public static String getTableName() {
+    	return "orders";
+    }
+    
+    /**
+     * Gets select clause
+     * @return String "select " + getFieldOrder() + " from " + getTableName()"
+     */
+    public static String getSelectClause() {
+    	return "select " + getFieldOrder() + " from " + getTableName();
+    }
+    
+    /**
+     * Gets insert statement with values of current object instance
+     * @return "insert into (table) (getFieldOrder()) values (fields)"
+     */
+    public String getInsertStatement() {
+    	return "insert into " + getTableName() + " (" + getFieldOrder() + ") values ('" 
+    		+ orderType 	+ "', '" 
+    		+ priceType 	+ "', '" 
+    		+ timeInForce 	+ "', '" 
+    		+ status 	+ "'," 
+    		+ accountId 	+ ", '"
+    		+ symbol	+ "', "
+    		+ size		+ ", "
+    		+ stopPrice	+ ", '"
+    		+ new SimpleDateFormat("yyyy-MM-dd").format(creationDateTime)
+		+ "');";
     }
 
     /**
@@ -121,7 +165,6 @@ public class Order {
         return status;
     }
     
-
     /**
      * @param status the status to set
      */

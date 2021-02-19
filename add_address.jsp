@@ -9,7 +9,7 @@
 	</head>
 	<body>      
 		<h1>Add Address</h1>
-		<form name="addaddressform" method="post" onsubmit="return checker()" action="AddAddress">
+		<form name="addressform" method="post" onsubmit="return checker()" action="AddAddress">
 			<fieldset>
 				<legend>Billing Address</legend>
 				<label for="frmLine1">Line 1:</label>
@@ -94,14 +94,14 @@
 				<label for="mFrmLine1">Line 1:</label>
 				<input type="text" name="mLine1" id="mFrmLine1" pattern="^\d{1,}(\s[A-Z][a-z?\.?]*)*" title="Must begin with street number and words must be capitalized" required/><br>
 				
-				<label for="mfrmLine2">Line 2:</label>
-				<input type="text" name="mLine2" id="mfrmLine2"/><br>
+				<label for="mFrmLine2">Line 2:</label>
+				<input type="text" name="mLine2" id="mFrmLine2"/><br>
 				
-				<label for="mfrmCity">City:</label>
-				<input type="text" name="mCity" id="mfrmCity" pattern="^[A-Z][a-z\.]+([\s\-][A-Z][a-z]+)*$" title="Capitalized word(s). No numbers" required/><br>
+				<label for="mFrmCity">City:</label>
+				<input type="text" name="mCity" id="mFrmCity" pattern="^[A-Z][a-z\.]+([\s\-][A-Z][a-z]+)*$" title="Capitalized word(s). No numbers" required/><br>
 				
-				<label for="mfrmState">State:</label>
-						<select id="mfrmState" name="mState">
+				<label for="mFrmState">State:</label>
+						<select id="mFrmState" name="mState">
 							<option value="AL">Alabama</option>
 							<option value="AK">Alaska</option>
 							<option value="AZ">Arizona</option>
@@ -155,7 +155,7 @@
 							<option value="WY">Wyoming</option>
 						</select><br>	
 				
-				<label for="mfrmZip">Zip(+4 optional)</label>
+				<label for="mFrmZip">Zip(+4 optional)</label>
 				<input type="text" name="mZip" id="mFrmZip" pattern="\d{5}" title="Must be five digits long" required/>-<input type="text" name="mZip4" pattern="\d{4}" title="Must be four digits long"/><br>
 			
 			</fieldset>

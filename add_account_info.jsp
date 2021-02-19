@@ -16,25 +16,13 @@
 			}
 		%>
 			
-		<form name="infoform" method="post" action="AddPersonalInfo">
+		<form name="infoform" method="post" action="AddAccountInfo">
 			First Name:       <input type="text"     name="fName" pattern="^[A-Z][a-z]+$" title="Starts with capital letter, no middle name"   required/><br>
 			Last Name:        <input type="text"     name="lName" pattern="^[A-Z][a-z]+" title="Starts with capital letter"   required/><br>
-			
-			<%
-				if (request.getAttribute("message") != null) {
-				    out.println("<p style=\"color:red;\">" + request.getAttribute("message") + "</p><br><br>");
-				}
-			%>
 			Email: <input type="email" name="email" required><br>
 			DOB: <input type="date" name="dob" required/><br>
 			SS#: <input type="text" name="ssn" pattern="\d{3}-\d{2}-\d{4}" title="***-**-****" required/><br>
-			
-			
 			<button type="submit" name="submit">Next</button><br>
 		</form>
-		
-		<script>
-			// date validation script
-		</script>
 	</body>
 </html>

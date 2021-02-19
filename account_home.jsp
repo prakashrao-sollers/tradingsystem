@@ -65,9 +65,9 @@
 	</c:if>
 
 	<ul class="navList">
-		<li class="navItem"><a class="active" href="#home">Home</a></li>
+		<li class="navItem"><a class="active" href="account_home.jsp">Home</a></li>
 		<li class="navItem"><a href="ViewStocks">View Stocks</a></li>
-		<li class="navItem"><a href="addfunds.jsp">Add Funds</a></li>
+		<li class="navItem"><a href="add_funds.jsp">Add Funds</a></li>
 		<li class="navItem"><a href="CreateOrder">Create Order</a></li>
 		<li class="navItem"><a href="EvaluatePortfolio">Evaluate Portfolio</a></li>
 		<li class="navItem"><a href="#viewHistory">History</a>

@@ -1,20 +1,12 @@
 package edu.sollers.javaprog.tradingsystem;
 /**
- * @author Sowmya, Karanveer
+ * @author Karanveer
  */
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.util.Date;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,69 +14,32 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class AddPersonalInfo
+ * AddAccountInfo extends TradingSystemServlet.
+ * 
+ * It is used to process the form submission post request from add_account_info.jsp
  */
-@WebServlet("/AddPersonalInfo")
-public class AddAccountInfo extends HttpServlet {
+@WebServlet("/AddAccountInfo")
+public class AddAccountInfo extends TradingSystemServlet {
     private static final long serialVersionUID = 1L;
-    private Connection conn;
+
 
     /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public AddAccountInfo() {
-	super();
-	// TODO Auto-generated constructor stub
-    }
-
-    /**
-     * init. Initialized database connection
-     */
-    public void init(ServletConfig config) throws ServletException 
-    {
-	super.init(config);
-	try {
-	    Class.forName("org.mariadb.jdbc.Driver");
-
-	    // conenction string
-	    String url = "jdbc:mariadb://localhost:3306/sollerstrading";
-	    conn = DriverManager.getConnection(url, "webuser", "Sollers@123");
-
-	    System.out.println("\nConnection made\n\n");
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	} catch (ClassNotFoundException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    /**
-     * destroy method closes db connection
-     */
-    public void destroy() {
-	try {
-	    conn.close();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    /**
+     * Default get method
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	// TODO Auto-generated method stub
 	response.getWriter().append("Served at: ").append(request.getContextPath());
     }
 
     /**
+     * The post method processes the form input from add_account_info.jsp
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	Integer userId = (Integer) request.getSession().getAttribute("userId");
+	Integer userId = getUserId(request);
 
 	System.out.println("User Id in session: " + userId);
-
 
 	String firstname = request.getParameter("fName");
 	String lastname = request.getParameter("lName");
@@ -98,8 +53,8 @@ public class AddAccountInfo extends HttpServlet {
 	if (now.minusYears(18).getYear() < dob.getYear()) {
 	    deleteUserFromLoginTable(userId);
 	    String message = "User is a minor";
-	    request.setAttribute("message", message);
-	    request.getRequestDispatcher("/addUser.jsp").forward(request, response);
+	    request.setAttribute("errorMessage", message);
+	    request.getRequestDispatcher("/add_user.jsp").forward(request, response);
 	}
 	else {
 	    try {
@@ -110,24 +65,24 @@ public class AddAccountInfo extends HttpServlet {
 	    } catch (SQLException e) {
 		e.printStackTrace();
 	    }
-
-	    request.getSession().setAttribute("userId", userId);
-	    response.sendRedirect("/TradingSystem/addAddress.jsp");
+	    response.sendRedirect("/TradingSystem/add_address.jsp");
 	}
     }
     
     
-    
+    /**
+     * Deletes entry from login table corresponding to given user id
+     * @param userId Integer
+     */
     private void deleteUserFromLoginTable(Integer userId) {
 	try {
 	    Statement stmt = conn.createStatement();
 	    int affectedRows = stmt.executeUpdate("DELETE FROM login WHERE id=\"" + userId + "\";");
 	    if (affectedRows == 1) System.out.println("User id: " + userId + " deleted from login");
+	    stmt.close();
 	} catch (SQLException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-	
     }
 
 }
